@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "clientId": 1,
+    "firstName": "Maria",
+    "lastName": "Silva",
+    "email": "maria.silva@example.com",
+    "phone": "+353 87 100 0001",
+    "dateOfBirth": "1990-04-12",
+    "nationality": "Brazilian",
+    "status": "processing",
+    "currentExpiry": "2026-08-25"
+  },
+  {
+    "id": 2,
+    "clientId": 1,
+    "firstName": "James",
+    "lastName": "O'Brien",
+    "email": "james.obrien@example.com",
+    "phone": "+353 87 100 0002",
+    "dateOfBirth": "1985-09-03",
+    "nationality": "Irish",
+    "status": "approved",
+    "currentExpiry": "2027-02-25"
+  },
+  {
+    "id": 3,
+    "clientId": 2,
+    "firstName": "Priya",
+    "lastName": "Nair",
+    "email": "priya.nair@example.com",
+    "phone": "+353 87 100 0003",
+    "dateOfBirth": "1993-01-28",
+    "nationality": "Indian",
+    "status": "pending",
+    "currentExpiry": "2026-11-25"
+  },
+  {
+    "id": 4,
+    "clientId": 2,
+    "firstName": "Tom",
+    "lastName": "Schmidt",
+    "email": "tom.schmidt@example.com",
+    "phone": "+353 87 100 0004",
+    "dateOfBirth": "1988-11-07",
+    "nationality": "German",
+    "status": "processing",
+    "currentExpiry": "2026-07-25"
+  },
+  {
+    "id": 5,
+    "clientId": 3,
+    "firstName": "Aisha",
+    "lastName": "Khan",
+    "email": "aisha.khan@example.com",
+    "phone": "+353 87 100 0005",
+    "dateOfBirth": "1995-06-19",
+    "nationality": "Pakistani",
+    "status": "pending",
+    "currentExpiry": "2026-09-25"
+  },
+  {
+    "id": 6,
+    "clientId": 3,
+    "firstName": "Luca",
+    "lastName": "Rossi",
+    "email": "luca.rossi@example.com",
+    "phone": "+353 87 100 0006",
+    "dateOfBirth": "1991-02-14",
+    "nationality": "Italian",
+    "status": "approved",
+    "currentExpiry": "2027-04-25"
+  }
+]

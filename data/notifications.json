@@ -1,0 +1,7 @@
+[
+  { "id": 1, "message": "New applicant created: Maria Silva", "actionType": "CREATE", "applicantId": 1, "clientId": 1, "createdAt": "2026-06-24T10:00:00Z", "read": false },
+  { "id": 2, "message": "Applicant updated: James O'Brien", "actionType": "UPDATE", "applicantId": 2, "clientId": 1, "createdAt": "2026-06-24T14:30:00Z", "read": false },
+  { "id": 3, "message": "New applicant created: Priya Nair", "actionType": "CREATE", "applicantId": 3, "clientId": 2, "createdAt": "2026-06-23T09:15:00Z", "read": true },
+  { "id": 4, "message": "Work permit expiring soon for Tom Schmidt", "actionType": "UPDATE", "applicantId": 4, "clientId": 2, "createdAt": "2026-06-25T08:00:00Z", "read": false },
+  { "id": 5, "message": "New applicant created: Aisha Khan", "actionType": "CREATE", "applicantId": 5, "clientId": 3, "createdAt": "2026-06-22T16:45:00Z", "read": false }
+]
