@@ -28,70 +28,75 @@ export default function HomePage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-10 shadow-xl">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-blue-600">Rialu ImmiTrack</h1>
-          <p className="mt-2 text-slate-500">Immigration case tracking demo</p>
-          <span className="mt-4 inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
-            Demo mode — no login required
+      <div className="w-full max-w-md card p-10">
+        <div className="text-center mb-8">
+          <h1 className="font-serif text-3xl" style={{ color: "var(--navy)" }}>
+            Rialu ImmiTrack
+          </h1>
+          <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
+            Immigration case management for modern law firms
+          </p>
+          <span
+            className="inline-block mt-4 rounded-full px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wide"
+            style={{ background: "#FDF4E3", color: "#8B6914" }}
+          >
+            Demo — no login required
           </span>
         </div>
 
-        <h2 className="mt-8 text-center text-lg font-semibold">Choose your view</h2>
+        <p className="text-center text-sm font-medium mb-4">Select your portal</p>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <button
             onClick={() => setRole("employee")}
-            className={`rounded-xl border-2 p-4 text-left transition ${
-              role === "employee"
-                ? "border-blue-500 bg-blue-50"
-                : "border-slate-200 hover:border-blue-300"
-            }`}
+            className="rounded-xl border-2 p-4 text-left transition"
+            style={{
+              borderColor: role === "employee" ? "var(--navy)" : "var(--border)",
+              background: role === "employee" ? "#EEF2F7" : "var(--surface)",
+            }}
           >
-            <div className="font-semibold">Employee</div>
-            <div className="mt-1 text-xs text-slate-500">Full admin access</div>
+            <div className="font-semibold text-sm">Immigration team</div>
+            <div className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+              Full caseload & AI tools
+            </div>
           </button>
           <button
             onClick={() => setRole("client")}
-            className={`rounded-xl border-2 p-4 text-left transition ${
-              role === "client"
-                ? "border-blue-500 bg-blue-50"
-                : "border-slate-200 hover:border-blue-300"
-            }`}
+            className="rounded-xl border-2 p-4 text-left transition"
+            style={{
+              borderColor: role === "client" ? "var(--navy)" : "var(--border)",
+              background: role === "client" ? "#EEF2F7" : "var(--surface)",
+            }}
           >
-            <div className="font-semibold">Client</div>
-            <div className="mt-1 text-xs text-slate-500">Your applications only</div>
+            <div className="font-semibold text-sm">Corporate client</div>
+            <div className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+              Your employees&apos; cases
+            </div>
           </button>
         </div>
 
         {role === "client" && (
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Demo client account
-            </label>
+          <div className="mb-4">
+            <label className="field-label">Demo organisation</label>
             <select
               value={clientId}
               onChange={(e) => setClientId(Number(e.target.value))}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--border)" }}
             >
               {SEED_DATA.clients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
         )}
 
-        <button
-          onClick={enter}
-          className="mt-6 w-full rounded-xl bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 transition"
-        >
-          Enter demo
+        <button onClick={enter} className="btn btn-primary w-full">
+          Enter portal
         </button>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
-          Demo data stored in your browser · resets with &quot;Reset demo data&quot;
+        <p className="text-center text-[0.7rem] mt-6" style={{ color: "var(--text-muted)" }}>
+          To switch portals, exit demo and return here
         </p>
       </div>
     </main>

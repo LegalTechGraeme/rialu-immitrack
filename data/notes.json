@@ -1,0 +1,6 @@
+[
+  { "id": 1, "applicantId": 1, "body": "Client confirmed employer letter received. Awaiting contract amendment from HR.", "createdAt": "2026-06-23T15:00:00Z", "author": "employee", "clientVisible": true },
+  { "id": 2, "applicantId": 4, "body": "We need the signed updated contract by 5 July — ISD will not extend beyond this date.", "createdAt": "2026-06-19T10:30:00Z", "author": "employee", "clientVisible": true },
+  { "id": 3, "applicantId": 3, "body": "I have requested the apostille from my university — expected within 2 weeks.", "createdAt": "2026-06-24T08:00:00Z", "author": "client", "clientVisible": true },
+  { "id": 4, "applicantId": 1, "body": "Internal: Check PEPOL salary threshold before renewal filing.", "createdAt": "2026-06-25T09:00:00Z", "author": "employee", "clientVisible": false }
+]

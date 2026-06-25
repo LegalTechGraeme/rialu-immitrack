@@ -1,74 +1,66 @@
 [
   {
-    "id": 1,
-    "clientId": 1,
-    "firstName": "Maria",
-    "lastName": "Silva",
-    "email": "maria.silva@example.com",
-    "phone": "+353 87 100 0001",
-    "dateOfBirth": "1990-04-12",
-    "nationality": "Brazilian",
-    "status": "processing",
-    "currentExpiry": "2026-08-25"
+    "id": 1, "clientId": 1, "firstName": "Maria", "lastName": "Silva",
+    "email": "maria.silva@example.com", "phone": "+353 87 100 0001",
+    "dateOfBirth": "1990-04-12", "nationality": "Brazilian",
+    "status": "processing", "visaType": "Critical Skills Employment Permit",
+    "currentExpiry": "2026-08-25", "priority": "high",
+    "assignedTo": "Sarah O'Connor", "nextAction": "Awaiting ISD decision — response due in 12 days"
   },
   {
-    "id": 2,
-    "clientId": 1,
-    "firstName": "James",
-    "lastName": "O'Brien",
-    "email": "james.obrien@example.com",
-    "phone": "+353 87 100 0002",
-    "dateOfBirth": "1985-09-03",
-    "nationality": "Irish",
-    "status": "approved",
-    "currentExpiry": "2027-02-25"
+    "id": 2, "clientId": 1, "firstName": "James", "lastName": "O'Brien",
+    "email": "james.obrien@example.com", "phone": "+353 87 100 0002",
+    "dateOfBirth": "1985-09-03", "nationality": "Irish",
+    "status": "approved", "visaType": "Stamp 4",
+    "currentExpiry": "2027-02-25", "priority": "low",
+    "assignedTo": "Sarah O'Connor", "nextAction": "Renewal review in Q4 2026"
   },
   {
-    "id": 3,
-    "clientId": 2,
-    "firstName": "Priya",
-    "lastName": "Nair",
-    "email": "priya.nair@example.com",
-    "phone": "+353 87 100 0003",
-    "dateOfBirth": "1993-01-28",
-    "nationality": "Indian",
-    "status": "pending",
-    "currentExpiry": "2026-11-25"
+    "id": 3, "clientId": 2, "firstName": "Priya", "lastName": "Nair",
+    "email": "priya.nair@example.com", "phone": "+353 87 100 0003",
+    "dateOfBirth": "1993-01-28", "nationality": "Indian",
+    "status": "documents", "visaType": "General Employment Permit",
+    "currentExpiry": "2026-11-25", "priority": "medium",
+    "assignedTo": "Michael Byrne", "nextAction": "Client to upload degree apostille"
   },
   {
-    "id": 4,
-    "clientId": 2,
-    "firstName": "Tom",
-    "lastName": "Schmidt",
-    "email": "tom.schmidt@example.com",
-    "phone": "+353 87 100 0004",
-    "dateOfBirth": "1988-11-07",
-    "nationality": "German",
-    "status": "processing",
-    "currentExpiry": "2026-07-25"
+    "id": 4, "clientId": 2, "firstName": "Tom", "lastName": "Schmidt",
+    "email": "tom.schmidt@example.com", "phone": "+353 87 100 0004",
+    "dateOfBirth": "1988-11-07", "nationality": "German",
+    "status": "additional_info", "visaType": "Work Permit",
+    "currentExpiry": "2026-07-25", "priority": "urgent",
+    "assignedTo": "Michael Byrne", "nextAction": "ISD requested updated contract — deadline 5 Jul"
   },
   {
-    "id": 5,
-    "clientId": 3,
-    "firstName": "Aisha",
-    "lastName": "Khan",
-    "email": "aisha.khan@example.com",
-    "phone": "+353 87 100 0005",
-    "dateOfBirth": "1995-06-19",
-    "nationality": "Pakistani",
-    "status": "pending",
-    "currentExpiry": "2026-09-25"
+    "id": 5, "clientId": 3, "firstName": "Aisha", "lastName": "Khan",
+    "email": "aisha.khan@example.com", "phone": "+353 87 100 0005",
+    "dateOfBirth": "1995-06-19", "nationality": "Pakistani",
+    "status": "intake", "visaType": "Student Visa → Graduate Scheme",
+    "currentExpiry": "2026-09-25", "priority": "medium",
+    "assignedTo": "Sarah O'Connor", "nextAction": "Schedule intake call"
   },
   {
-    "id": 6,
-    "clientId": 3,
-    "firstName": "Luca",
-    "lastName": "Rossi",
-    "email": "luca.rossi@example.com",
-    "phone": "+353 87 100 0006",
-    "dateOfBirth": "1991-02-14",
-    "nationality": "Italian",
-    "status": "approved",
-    "currentExpiry": "2027-04-25"
+    "id": 6, "clientId": 3, "firstName": "Luca", "lastName": "Rossi",
+    "email": "luca.rossi@example.com", "phone": "+353 87 100 0006",
+    "dateOfBirth": "1991-02-14", "nationality": "Italian",
+    "status": "approved", "visaType": "Critical Skills Permit",
+    "currentExpiry": "2027-04-25", "priority": "low",
+    "assignedTo": "Michael Byrne", "nextAction": "Annual compliance check"
+  },
+  {
+    "id": 7, "clientId": 1, "firstName": "Chen", "lastName": "Wei",
+    "email": "chen.wei@example.com", "phone": "+353 87 100 0007",
+    "dateOfBirth": "1992-08-20", "nationality": "Chinese",
+    "status": "submitted", "visaType": "Intra-Company Transfer",
+    "currentExpiry": "2026-10-15", "priority": "medium",
+    "assignedTo": "Sarah O'Connor", "nextAction": "Filed 18 Jun — standard processing"
+  },
+  {
+    "id": 8, "clientId": 2, "firstName": "Fatima", "lastName": "Al-Hassan",
+    "email": "fatima.alhassan@example.com", "phone": "+353 87 100 0008",
+    "dateOfBirth": "1989-03-11", "nationality": "Egyptian",
+    "status": "on_hold", "visaType": "Dependant Permit",
+    "currentExpiry": "2026-12-01", "priority": "low",
+    "assignedTo": "Michael Byrne", "nextAction": "Paused at client request until September"
   }
 ]

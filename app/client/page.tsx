@@ -1,129 +1,81 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import ApplicantTable from "@/components/ApplicantTable";
-import ApplicantForm from "@/components/ApplicantForm";
+import StatCard from "@/components/StatCard";
+import CaseTable from "@/components/CaseTable";
+import PageBody, { PageHeader } from "@/components/PageHeader";
 import { useAppData } from "@/hooks/useAppData";
-import { addApplicant, getSession, resetData, updateApplicant } from "@/lib/store";
-import { SEED_DATA } from "@/lib/seed";
-import type { Applicant } from "@/lib/types";
+import { getSession, resetData, updateCaseStatus } from "@/lib/store";
 
-type View = "list" | "create" | "edit";
-
-export default function ClientPage() {
-  const router = useRouter();
+export default function ClientDashboard() {
   const { data, update, ready } = useAppData();
-  const [view, setView] = useState<View>("list");
-  const [editId, setEditId] = useState<number | null>(null);
   const [clientId, setClientId] = useState(1);
 
   useEffect(() => {
     const s = getSession();
-    if (!s || s.role !== "client") {
-      router.replace("/");
-      return;
-    }
-    setClientId(s.clientId ?? 1);
-  }, [router]);
+    if (s?.clientId) setClientId(s.clientId);
+  }, []);
 
-  const mine = useMemo(() => {
-    if (!data) return [];
-    return data.applicants.filter((a) => a.clientId === clientId);
-  }, [data, clientId]);
+  const client = data?.clients.find((c) => c.id === clientId);
+  const mine = useMemo(
+    () => data?.applicants.filter((a) => a.clientId === clientId) ?? [],
+    [data, clientId]
+  );
 
-  const clientName =
-    data?.clients.find((c) => c.id === clientId)?.name ??
-    SEED_DATA.clients.find((c) => c.id === clientId)?.name ??
-    "Client";
+  const stats = useMemo(() => {
+    if (!mine.length) return { total: 0, active: 0, approved: 0 };
+    return {
+      total: mine.length,
+      active: mine.filter((a) => !["approved", "refused"].includes(a.status)).length,
+      approved: mine.filter((a) => a.status === "approved").length,
+    };
+  }, [mine]);
 
-  if (!ready || !data) {
-    return <div className="p-8 text-center text-slate-500">Loading…</div>;
-  }
-
-  const editing = editId ? mine.find((a) => a.id === editId) : undefined;
+  if (!ready || !data) return <PageBody><p>Loading…</p></PageBody>;
 
   return (
-    <main className="mx-auto max-w-4xl p-6">
-      <Header role="client" clientId={clientId} />
-
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Client portal</h1>
-          <p className="text-slate-500 text-sm">Viewing as {clientName}</p>
+    <>
+      <PageHeader
+        title="Your dashboard"
+        subtitle={client?.name ?? "Client portal"}
+        actions={
+          <button className="btn btn-ghost text-xs" onClick={() => update(resetData())}>
+            Reset demo
+          </button>
+        }
+      />
+      <PageBody>
+        <div className="grid gap-4 sm:grid-cols-3 mb-8">
+          <StatCard label="Your cases" value={stats.total} />
+          <StatCard label="In progress" value={stats.active} accent="gold" />
+          <StatCard label="Approved" value={stats.approved} accent="success" />
         </div>
-        <button
-          onClick={() => update(resetData())}
-          className="text-xs text-slate-400 hover:text-slate-600 underline"
-        >
-          Reset demo data
-        </button>
-      </div>
 
-      <div className="mb-6 flex gap-3">
-        <button
-          onClick={() => {
-            setView("list");
-            setEditId(null);
-          }}
-          className={`rounded-lg px-4 py-2 text-sm font-medium ${
-            view === "list"
-              ? "bg-blue-600 text-white"
-              : "bg-white border border-slate-200 text-slate-700"
-          }`}
-        >
-          My applications
-        </button>
-        <button
-          onClick={() => setView("create")}
-          className={`rounded-lg px-4 py-2 text-sm font-medium ${
-            view === "create"
-              ? "bg-blue-600 text-white"
-              : "bg-white border border-slate-200 text-slate-700"
-          }`}
-        >
-          Add application
-        </button>
-      </div>
+        <div className="card p-5 mb-8" style={{ borderLeft: "3px solid var(--navy)" }}>
+          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+            Update case status when you&apos;ve gathered documents or are ready to submit.
+            Your immigration team is notified automatically on every change.
+          </p>
+        </div>
 
-      {view === "list" && (
-        <ApplicantTable
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-serif text-xl">Your applications</h2>
+          <Link href="/client/cases" className="text-sm font-medium hover:underline" style={{ color: "var(--navy)" }}>
+            View all →
+          </Link>
+        </div>
+
+        <CaseTable
           data={data}
           applicants={mine}
-          onSelect={(id) => {
-            setEditId(id);
-            setView("edit");
-          }}
+          role="client"
+          basePath="/client"
+          onStatusChange={(id, status) =>
+            update(updateCaseStatus(data, id, status, "client"))
+          }
         />
-      )}
-
-      {view === "create" && (
-        <ApplicantForm
-          data={data}
-          clientId={clientId}
-          lockClient
-          onCancel={() => setView("list")}
-          onSubmit={(values) => {
-            update(addApplicant(data, values));
-            setView("list");
-          }}
-        />
-      )}
-
-      {view === "edit" && editing && (
-        <ApplicantForm
-          data={data}
-          initial={editing}
-          clientId={clientId}
-          lockClient
-          onCancel={() => setView("list")}
-          onSubmit={(values) => {
-            update(updateApplicant(data, editing.id, values as Partial<Applicant>));
-            setView("list");
-          }}
-        />
-      )}
-    </main>
+      </PageBody>
+    </>
   );
 }

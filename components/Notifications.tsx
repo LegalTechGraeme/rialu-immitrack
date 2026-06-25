@@ -12,54 +12,68 @@ export default function Notifications({ data, onUpdate }: Props) {
   const unread = data.notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="relative">
-      <details className="group">
-        <summary className="cursor-pointer list-none flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm hover:bg-slate-50">
-          <span>🔔</span>
-          <span>Notifications</span>
+    <details className="relative">
+      <summary className="btn btn-secondary cursor-pointer list-none">
+        Alerts
+        {unread > 0 && (
+          <span
+            className="rounded-full px-1.5 py-0.5 text-[0.65rem] font-bold text-white"
+            style={{ background: "var(--danger)" }}
+          >
+            {unread}
+          </span>
+        )}
+      </summary>
+      <div
+        className="absolute right-0 z-30 mt-2 w-80 rounded-xl border shadow-lg"
+        style={{ background: "var(--surface)", borderColor: "var(--border)", boxShadow: "var(--shadow-md)" }}
+      >
+        <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: "var(--border)" }}>
+          <span className="font-semibold text-sm">Notifications</span>
           {unread > 0 && (
-            <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
-              {unread}
-            </span>
+            <button
+              onClick={() => onUpdate(markAllNotificationsRead(data))}
+              className="text-xs hover:underline"
+              style={{ color: "var(--navy)" }}
+            >
+              Mark all read
+            </button>
           )}
-        </summary>
-        <div className="absolute right-0 z-20 mt-2 w-80 rounded-xl border border-slate-200 bg-white shadow-lg">
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-            <span className="font-semibold text-sm">Recent activity</span>
-            {unread > 0 && (
-              <button
-                onClick={() => onUpdate(markAllNotificationsRead(data))}
-                className="text-xs text-blue-600 hover:underline"
-              >
-                Mark all read
-              </button>
-            )}
-          </div>
-          <ul className="max-h-64 overflow-y-auto divide-y divide-slate-50">
-            {data.notifications.map((n) => (
-              <li
-                key={n.id}
-                className={`px-4 py-3 text-sm ${n.read ? "text-slate-400" : "text-slate-700"}`}
-              >
-                <p>{n.message}</p>
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="text-xs text-slate-400">
-                    {new Date(n.createdAt).toLocaleString()}
-                  </span>
-                  {!n.read && (
-                    <button
-                      onClick={() => onUpdate(markNotificationRead(data, n.id))}
-                      className="text-xs text-blue-600 hover:underline"
-                    >
-                      Mark read
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
         </div>
-      </details>
-    </div>
+        <ul className="max-h-72 overflow-y-auto">
+          {data.notifications.map((n) => (
+            <li
+              key={n.id}
+              className="border-b px-4 py-3 text-sm"
+              style={{
+                borderColor: "var(--border-light)",
+                opacity: n.read ? 0.6 : 1,
+              }}
+            >
+              <div className="flex items-start gap-2">
+                {n.actionType === "AI" && (
+                  <span style={{ color: "var(--gold)" }}>✦</span>
+                )}
+                <p>{n.message}</p>
+              </div>
+              <div className="mt-1 flex justify-between">
+                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  {new Date(n.createdAt).toLocaleString()}
+                </span>
+                {!n.read && (
+                  <button
+                    onClick={() => onUpdate(markNotificationRead(data, n.id))}
+                    className="text-xs hover:underline"
+                    style={{ color: "var(--navy)" }}
+                  >
+                    Read
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </details>
   );
 }

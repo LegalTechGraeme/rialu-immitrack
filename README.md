@@ -1,34 +1,48 @@
 # Rialu ImmiTrack
 
-Modern immigration case tracking **demo** — Next.js, no database required.
+AI-native immigration case management demo — built for modern law firm teams.
 
-## How it works
+## Features
 
-- **Demo data** lives in `data/*.json` (committed to the repo, ~3KB total)
-- **Edits persist in your browser** via localStorage (add/update applicants, notifications)
-- **No PostgreSQL** — deploys cleanly to Vercel free tier
-- **Role toggle** — Employee (all clients) or Client (single account), no login
+**Immigration team portal**
+- Team overview with priority queue and stats
+- All cases with inline status updates
+- Case detail: documents, timeline, notes, AI brief
+- Reports: expiry pipeline, WIP, missing documents
+- AI intelligence: team briefing and high-attention cases
 
-## Deploy to Vercel
+**Corporate client portal**
+- Dashboard scoped to their employees
+- Update case status (documents ready, submit, on hold)
+- Case detail with document checklist and messaging
 
-1. Push this repo to GitHub
-2. [vercel.com](https://vercel.com) → **Add New Project** → import repo
-3. Deploy (zero config needed)
+**Design**
+- Rialu brand aesthetic: navy, gold, warm cream (matches Rialu Graph)
+- Cormorant Garamond + DM Sans typography
+- Sidebar app shell
+
+**Data**
+- Seed data in `data/*.json` — no database required
+- Edits persist in browser localStorage
+- Deploy to Vercel free tier
+
+## Deploy
+
+1. Push to GitHub
+2. [vercel.com](https://vercel.com) → import repo → Deploy
 
 ## Local dev
 
 ```bash
-npm install
-npm run dev
+npm install && npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open http://localhost:3000 — pick **Immigration team** or **Corporate client**. To switch portals, use **Exit demo** (no in-app role toggle).
 
-## Stack
+## AI roadmap
 
-- Next.js 16 · React · TypeScript · Tailwind CSS
-- JSON seed data + localStorage
-
-## Reset demo data
-
-Click **Reset demo data** in the dashboard header to restore original JSON seed.
+Current AI panels use rule-based summaries (demo). Plug in OpenAI/Anthropic for:
+- Document extraction from uploads
+- Natural-language case queries
+- ISD correspondence drafting
+- Proactive risk scoring

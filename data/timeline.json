@@ -1,0 +1,8 @@
+[
+  { "id": 1, "applicantId": 1, "type": "status_change", "message": "Status changed to Under review", "createdAt": "2026-06-20T14:00:00Z", "actor": "employee", "clientVisible": true },
+  { "id": 2, "applicantId": 1, "type": "ai_insight", "message": "AI: Permit expires in ~60 days. Recommend initiating renewal 90 days before expiry per firm policy.", "createdAt": "2026-06-25T07:30:00Z", "actor": "ai", "clientVisible": false },
+  { "id": 3, "applicantId": 4, "type": "status_change", "message": "ISD requested additional information — updated employment contract required", "createdAt": "2026-06-18T11:00:00Z", "actor": "employee", "clientVisible": true },
+  { "id": 4, "applicantId": 4, "type": "ai_insight", "message": "AI: High risk — deadline in 10 days. Missing required document. Suggest urgent client outreach.", "createdAt": "2026-06-25T08:00:00Z", "actor": "ai", "clientVisible": false },
+  { "id": 5, "applicantId": 3, "type": "note", "message": "Client notified via portal to upload apostilled degree", "createdAt": "2026-06-22T09:00:00Z", "actor": "employee", "clientVisible": true },
+  { "id": 6, "applicantId": 5, "type": "system", "message": "Case opened — intake questionnaire sent", "createdAt": "2026-06-21T10:00:00Z", "actor": "system", "clientVisible": true }
+]

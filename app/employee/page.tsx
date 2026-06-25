@@ -1,206 +1,114 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import ApplicantTable from "@/components/ApplicantTable";
-import ApplicantForm from "@/components/ApplicantForm";
+import Link from "next/link";
+import { useMemo } from "react";
+import StatCard from "@/components/StatCard";
 import Notifications from "@/components/Notifications";
+import { PriorityBadge, StatusBadge } from "@/components/StatusBadge";
+import PageBody, { PageHeader } from "@/components/PageHeader";
 import { useAppData } from "@/hooks/useAppData";
-import {
-  addApplicant,
-  getSession,
-  monthsUntil,
-  resetData,
-  updateApplicant,
-} from "@/lib/store";
-import type { Applicant } from "@/lib/types";
+import { generateTeamInsights } from "@/lib/ai";
+import { resetData } from "@/lib/store";
 
-type View = "home" | "create" | "edit" | "expiry" | "wip";
-
-export default function EmployeePage() {
-  const router = useRouter();
+export default function EmployeeOverview() {
   const { data, update, ready } = useAppData();
-  const [view, setView] = useState<View>("home");
-  const [clientFilter, setClientFilter] = useState<number | "">("");
-  const [expiryMonths, setExpiryMonths] = useState(3);
-  const [search, setSearch] = useState("");
-  const [editId, setEditId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const s = getSession();
-    if (!s || s.role !== "employee") router.replace("/");
-  }, [router]);
-
-  const filtered = useMemo(() => {
-    if (!data) return [];
-    let list = data.applicants;
-    if (clientFilter) list = list.filter((a) => a.clientId === clientFilter);
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(
-        (a) =>
-          a.firstName.toLowerCase().includes(q) ||
-          a.lastName.toLowerCase().includes(q) ||
-          a.email.toLowerCase().includes(q)
-      );
-    }
-    return list;
-  }, [data, clientFilter, search]);
-
-  const expiryList = useMemo(() => {
-    if (!data) return [];
-    return data.applicants.filter(
-      (a) => monthsUntil(a.currentExpiry) >= 0 && monthsUntil(a.currentExpiry) <= expiryMonths
-    );
-  }, [data, expiryMonths]);
-
-  const wipList = useMemo(() => {
-    if (!data) return [];
-    return data.applicants.filter((a) =>
-      ["pending", "processing"].includes(a.status)
-    );
+  const stats = useMemo(() => {
+    if (!data) return null;
+    return {
+      total: data.applicants.length,
+      urgent: data.applicants.filter((a) => a.priority === "urgent").length,
+      processing: data.applicants.filter((a) =>
+        ["submitted", "processing", "additional_info"].includes(a.status)
+      ).length,
+      approved: data.applicants.filter((a) => a.status === "approved").length,
+    };
   }, [data]);
 
-  if (!ready || !data) {
-    return <div className="p-8 text-center text-slate-500">Loading…</div>;
+  const priorityCases = useMemo(() => {
+    if (!data) return [];
+    return [...data.applicants]
+      .sort((a, b) => {
+        const p = { urgent: 0, high: 1, medium: 2, low: 3 };
+        return p[a.priority] - p[b.priority];
+      })
+      .slice(0, 5);
+  }, [data]);
+
+  const insights = data ? generateTeamInsights(data) : [];
+
+  if (!ready || !data || !stats) {
+    return <PageBody><p style={{ color: "var(--text-muted)" }}>Loading…</p></PageBody>;
   }
 
-  const editing = editId ? data.applicants.find((a) => a.id === editId) : undefined;
-
   return (
-    <main className="mx-auto max-w-6xl p-6">
-      <Header role="employee" />
-
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Employee dashboard</h1>
-          <p className="text-slate-500 text-sm">Manage all client immigration cases</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Notifications data={data} onUpdate={update} />
-          <button
-            onClick={() => update(resetData())}
-            className="text-xs text-slate-400 hover:text-slate-600 underline"
-          >
-            Reset demo data
-          </button>
-        </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside className="space-y-2">
-          {(
-            [
-              ["home", "All applicants"],
-              ["expiry", "Expiry report"],
-              ["wip", "Work in progress"],
-              ["create", "Add applicant"],
-            ] as const
-          ).map(([v, label]) => (
-            <button
-              key={v}
-              onClick={() => {
-                setView(v);
-                setEditId(null);
-              }}
-              className={`w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium transition ${
-                view === v
-                  ? "bg-blue-600 text-white"
-                  : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
-              }`}
-            >
-              {label}
+    <>
+      <PageHeader
+        title="Team overview"
+        subtitle="Immigration caseload across all corporate clients"
+        actions={
+          <div className="flex gap-2">
+            <Notifications data={data} onUpdate={update} />
+            <button className="btn btn-ghost text-xs" onClick={() => update(resetData())}>
+              Reset demo
             </button>
-          ))}
-
-          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
-            <label className="text-xs font-medium text-slate-500">Filter by client</label>
-            <select
-              value={clientFilter}
-              onChange={(e) =>
-                setClientFilter(e.target.value ? Number(e.target.value) : "")
-              }
-              className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
-            >
-              <option value="">All clients</option>
-              {data.clients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
           </div>
-        </aside>
+        }
+      />
+      <PageBody>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+          <StatCard label="Active cases" value={stats.total} />
+          <StatCard label="Urgent" value={stats.urgent} accent="danger" hint="Needs action today" />
+          <StatCard label="With authorities" value={stats.processing} accent="gold" />
+          <StatCard label="Approved" value={stats.approved} accent="success" />
+        </div>
 
-        <section>
-          {view === "home" && (
-            <>
-              <input
-                type="search"
-                placeholder="Search by name or email…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="mb-4 w-full rounded-lg border border-slate-300 px-4 py-2 text-sm"
-              />
-              <ApplicantTable
-                data={data}
-                applicants={filtered}
-                showClient
-                onSelect={(id) => {
-                  setEditId(id);
-                  setView("edit");
-                }}
-              />
-            </>
-          )}
-
-          {view === "expiry" && (
-            <>
-              <div className="mb-4 flex items-center gap-3">
-                <label className="text-sm text-slate-600">Expiring within</label>
-                <select
-                  value={expiryMonths}
-                  onChange={(e) => setExpiryMonths(Number(e.target.value))}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="card">
+            <div className="px-5 py-4 border-b font-semibold" style={{ borderColor: "var(--border)" }}>
+              Priority queue
+            </div>
+            <ul>
+              {priorityCases.map((a) => (
+                <li
+                  key={a.id}
+                  className="flex items-center justify-between px-5 py-3 border-b hover:bg-[var(--bg-muted)] transition"
+                  style={{ borderColor: "var(--border-light)" }}
                 >
-                  <option value={3}>3 months</option>
-                  <option value={6}>6 months</option>
-                  <option value={9}>9 months</option>
-                </select>
-              </div>
-              <ApplicantTable data={data} applicants={expiryList} showClient />
-            </>
-          )}
+                  <div>
+                    <Link href={`/employee/cases/${a.id}`} className="font-medium hover:underline" style={{ color: "var(--navy)" }}>
+                      {a.firstName} {a.lastName}
+                    </Link>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{a.nextAction}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <PriorityBadge priority={a.priority} />
+                    <StatusBadge status={a.status} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          {view === "wip" && (
-            <ApplicantTable data={data} applicants={wipList} showClient />
-          )}
-
-          {view === "create" && (
-            <ApplicantForm
-              data={data}
-              onCancel={() => setView("home")}
-              onSubmit={(values) => {
-                update(addApplicant(data, values));
-                setView("home");
-              }}
-            />
-          )}
-
-          {view === "edit" && editing && (
-            <ApplicantForm
-              data={data}
-              initial={editing}
-              onCancel={() => setView("home")}
-              onSubmit={(values) => {
-                update(updateApplicant(data, editing.id, values as Partial<Applicant>));
-                setView("home");
-              }}
-            />
-          )}
-        </section>
-      </div>
-    </main>
+          <div className="ai-panel card p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <span style={{ color: "var(--gold)" }}>✦</span>
+              <span className="font-semibold" style={{ color: "var(--navy)" }}>AI team briefing</span>
+            </div>
+            <ul className="space-y-3 text-sm" style={{ color: "var(--text-secondary)" }}>
+              {insights.map((line, i) => (
+                <li key={i} className="flex gap-2">
+                  <span style={{ color: "var(--gold)" }}>·</span>
+                  {line}
+                </li>
+              ))}
+            </ul>
+            <Link href="/employee/intelligence" className="inline-block mt-4 text-sm font-medium hover:underline" style={{ color: "var(--navy)" }}>
+              Full intelligence view →
+            </Link>
+          </div>
+        </div>
+      </PageBody>
+    </>
   );
 }
