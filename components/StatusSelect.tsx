@@ -18,7 +18,7 @@ export default function StatusSelect({ value, role, onChange, compact }: Props) 
       value={value}
       onChange={(e) => onChange(e.target.value as CaseStatus)}
       onClick={(e) => e.stopPropagation()}
-      className={`rounded-lg border text-sm font-medium transition ${compact ? "py-1 px-2 text-xs" : "py-1.5 px-2.5"}`}
+      className={`w-full sm:w-auto rounded-lg border text-sm font-medium transition ${compact ? "py-1 px-2 text-xs" : "py-2 px-2.5"}`}
       style={{
         borderColor: "var(--border)",
         background: "var(--surface)",

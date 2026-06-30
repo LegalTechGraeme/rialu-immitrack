@@ -54,7 +54,7 @@ export default function CaseDetailView({ data, applicant, role, onUpdate }: Prop
                 </p>
               )}
             </div>
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-stretch sm:items-end gap-2 w-full sm:w-auto shrink-0">
               <StatusBadge status={applicant.status} />
               <PriorityBadge priority={applicant.priority} />
               <StatusSelect

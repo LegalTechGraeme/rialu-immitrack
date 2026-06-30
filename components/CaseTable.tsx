@@ -168,7 +168,56 @@ export default function CaseTable({
 
   return (
     <>
-      <div className="card overflow-hidden">
+      {/* Mobile: card list (below lg only) */}
+      <div className="lg:hidden space-y-3">
+        {sortedApplicants.map((a) => (
+          <article
+            key={a.id}
+            className="card p-4"
+            style={{ borderColor: "var(--border)" }}
+          >
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="min-w-0">
+                <Link
+                  href={`${basePath}/cases/${a.id}`}
+                  className="font-semibold text-base hover:underline"
+                  style={{ color: "var(--navy)" }}
+                >
+                  {a.firstName} {a.lastName}
+                </Link>
+                <p className="text-xs mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>
+                  {a.visaType}
+                </p>
+              </div>
+              <PriorityBadge priority={a.priority} />
+            </div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <StatusBadge status={a.status} />
+              {showClient && (
+                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  {clientName(data, a.clientId)}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="field-label mb-0">Update status</label>
+              <StatusSelect
+                value={a.status}
+                role={role}
+                onChange={(s) => requestStatusChange(a, s)}
+              />
+            </div>
+            {a.currentExpiry && (
+              <p className="text-xs mt-3" style={{ color: "var(--text-muted)" }}>
+                Expiry: {a.currentExpiry}
+              </p>
+            )}
+          </article>
+        ))}
+      </div>
+
+      {/* Desktop: table (lg and above — unchanged) */}
+      <div className="hidden lg:block card overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b text-left" style={{ borderColor: "var(--border-light)", background: "var(--bg)" }}>

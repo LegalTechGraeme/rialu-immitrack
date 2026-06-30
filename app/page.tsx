@@ -27,8 +27,8 @@ export default function HomePage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md card p-10">
+    <main className="flex min-h-screen items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-md card p-6 sm:p-10">
         <div className="text-center mb-8">
           <h1 className="font-serif text-3xl" style={{ color: "var(--navy)" }}>
             Rialu ImmiTrack
@@ -46,7 +46,7 @@ export default function HomePage() {
 
         <p className="text-center text-sm font-medium mb-4">Select your portal</p>
 
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <button
             onClick={() => setRole("employee")}
             className="rounded-xl border-2 p-4 text-left transition"

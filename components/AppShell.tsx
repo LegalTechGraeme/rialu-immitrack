@@ -18,20 +18,36 @@ interface AppShellProps {
   stats?: { label: string; value: string | number }[];
 }
 
+function navLabel(label: string) {
+  const short: Record<string, string> = {
+    Overview: "Home",
+    Dashboard: "Home",
+    "All cases": "Cases",
+    "My cases": "Cases",
+    "Reports & alerts": "Reports",
+    "AI intelligence": "AI",
+  };
+  return short[label] ?? label.split(" ")[0];
+}
+
 export default function AppShell({
   role,
   clientName,
   nav,
   children,
-  stats,
 }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const isActive = (href: string) =>
+    pathname === href ||
+    (href !== `/${role}` && pathname.startsWith(href));
+
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen max-lg:flex-col">
+      {/* Desktop sidebar — unchanged at lg+ */}
       <aside
-        className="w-[260px] shrink-0 border-r flex flex-col sticky top-0 h-screen"
+        className="hidden lg:flex w-[260px] shrink-0 border-r flex-col sticky top-0 h-screen"
         style={{
           background: "var(--surface)",
           borderColor: "var(--border)",
@@ -47,38 +63,20 @@ export default function AppShell({
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          {nav.map((item) => {
-            const active =
-              pathname === item.href ||
-              (item.href !== `/${role}` && pathname.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="block rounded-lg px-4 py-2.5 text-sm font-medium transition"
-                style={{
-                  background: active ? "var(--navy)" : "transparent",
-                  color: active ? "white" : "var(--text-muted)",
-                }}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+          {nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="block rounded-lg px-4 py-2.5 text-sm font-medium transition"
+              style={{
+                background: isActive(item.href) ? "var(--navy)" : "transparent",
+                color: isActive(item.href) ? "white" : "var(--text-muted)",
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
-
-        {stats && stats.length > 0 && (
-          <div className="p-4 border-t space-y-2" style={{ borderColor: "var(--border)" }}>
-            {stats.map((s) => (
-              <div key={s.label} className="flex justify-between text-xs">
-                <span style={{ color: "var(--text-muted)" }}>{s.label}</span>
-                <span className="font-semibold" style={{ color: "var(--navy)" }}>
-                  {s.value}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
 
         <div className="p-4 border-t" style={{ borderColor: "var(--border)" }}>
           <button
@@ -93,9 +91,62 @@ export default function AppShell({
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Mobile top bar — only below lg */}
+      <header
+        className="lg:hidden sticky top-0 z-40 flex items-center justify-between border-b px-4 py-3"
+        style={{ background: "var(--surface)", borderColor: "var(--border)" }}
+      >
+        <div>
+          <div className="font-serif text-lg leading-tight" style={{ color: "var(--navy)" }}>
+            Rialu ImmiTrack
+          </div>
+          <p className="text-[0.65rem]" style={{ color: "var(--text-muted)" }}>
+            {role === "employee" ? "Immigration team" : clientName ?? "Client"}
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            clearSession();
+            router.push("/");
+          }}
+          className="btn btn-ghost text-xs shrink-0"
+        >
+          Exit
+        </button>
+      </header>
+
+      <div className="flex-1 flex flex-col min-w-0 max-lg:pb-[calc(4.5rem+env(safe-area-inset-bottom))]">
         {children}
       </div>
+
+      {/* Mobile bottom nav — only below lg */}
+      <nav
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t"
+        style={{
+          background: "var(--surface)",
+          borderColor: "var(--border)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
+        aria-label="Main navigation"
+      >
+        <div className="flex items-stretch justify-around">
+          {nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex-1 flex flex-col items-center justify-center py-2.5 px-1 min-h-[3.25rem] text-center transition"
+              style={{
+                color: isActive(item.href) ? "var(--navy)" : "var(--text-muted)",
+                background: isActive(item.href) ? "#EEF2F7" : "transparent",
+              }}
+            >
+              <span className="text-[0.65rem] font-semibold leading-tight">
+                {navLabel(item.label)}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 }

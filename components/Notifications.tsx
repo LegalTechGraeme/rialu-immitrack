@@ -62,7 +62,7 @@ export default function Notifications({ data, onUpdate, clientId }: Props) {
 
       {open && (
         <div
-          className="absolute right-0 z-30 mt-2 w-80 rounded-xl border shadow-lg"
+          className="absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border shadow-lg"
           style={{ background: "var(--surface)", borderColor: "var(--border)", boxShadow: "var(--shadow-md)" }}
         >
           <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: "var(--border)" }}>

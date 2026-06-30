@@ -124,3 +124,17 @@ input:focus, select:focus, textarea:focus {
   border: 1px solid var(--border);
   border-left: 3px solid var(--gold);
 }
+
+/* Mobile-only enhancements — desktop (lg+) untouched */
+@media (max-width: 1023px) {
+  .btn {
+    min-height: 2.75rem;
+  }
+
+  select,
+  input[type="search"],
+  input[type="text"],
+  textarea {
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+}

@@ -46,19 +46,19 @@ export default function EmployeeCasesPage() {
         }
       />
       <PageBody>
-        <div className="flex flex-wrap gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 mb-6">
           <input
             type="search"
             placeholder="Search cases…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm min-w-[200px]"
+            className="w-full sm:min-w-[200px] sm:w-auto rounded-lg border px-3 py-2 text-sm"
             style={{ borderColor: "var(--border)" }}
           />
           <select
             value={clientFilter}
             onChange={(e) => setClientFilter(e.target.value ? Number(e.target.value) : "")}
-            className="rounded-lg border px-3 py-2 text-sm"
+            className="w-full sm:w-auto rounded-lg border px-3 py-2 text-sm"
             style={{ borderColor: "var(--border)" }}
           >
             <option value="">All clients</option>
@@ -69,7 +69,7 @@ export default function EmployeeCasesPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm"
+            className="w-full sm:w-auto rounded-lg border px-3 py-2 text-sm"
             style={{ borderColor: "var(--border)" }}
           >
             <option value="">All statuses</option>
