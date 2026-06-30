@@ -6,10 +6,14 @@ import { markAllNotificationsRead, markNotificationRead } from "@/lib/store";
 interface Props {
   data: AppData;
   onUpdate: (data: AppData) => void;
+  clientId?: number;
 }
 
-export default function Notifications({ data, onUpdate }: Props) {
-  const unread = data.notifications.filter((n) => !n.read).length;
+export default function Notifications({ data, onUpdate, clientId }: Props) {
+  const notifications = clientId
+    ? data.notifications.filter((n) => n.clientId === clientId)
+    : data.notifications;
+  const unread = notifications.filter((n) => !n.read).length;
 
   return (
     <details className="relative">
@@ -41,7 +45,12 @@ export default function Notifications({ data, onUpdate }: Props) {
           )}
         </div>
         <ul className="max-h-72 overflow-y-auto">
-          {data.notifications.map((n) => (
+          {notifications.length === 0 ? (
+            <li className="px-4 py-6 text-sm text-center" style={{ color: "var(--text-muted)" }}>
+              No notifications yet
+            </li>
+          ) : (
+            notifications.map((n) => (
             <li
               key={n.id}
               className="border-b px-4 py-3 text-sm"
@@ -71,7 +80,8 @@ export default function Notifications({ data, onUpdate }: Props) {
                 )}
               </div>
             </li>
-          ))}
+            ))
+          )}
         </ul>
       </div>
     </details>

@@ -118,17 +118,40 @@ export function updateCaseStatus(
   return next;
 }
 
+const DEFAULT_DOCUMENT_TYPES = [
+  "Passport",
+  "Employment contract",
+  "Proof of qualifications",
+];
+
+function defaultDocuments(data: AppData, applicantId: number) {
+  let id = nextId(data.documents);
+  return DEFAULT_DOCUMENT_TYPES.map((documentType) => ({
+    id: id++,
+    applicantId,
+    documentType,
+    issueDate: "",
+    expiryDate: "",
+    status: "missing" as const,
+    required: true,
+  }));
+}
+
 export function addApplicant(
   data: AppData,
-  applicant: Omit<Applicant, "id">
+  applicant: Omit<Applicant, "id">,
+  options?: { openedBy?: Role }
 ): AppData {
   const created: Applicant = { ...applicant, id: nextId(data.applicants) };
+  const actor = options?.openedBy ?? "system";
+  const openedByLabel =
+    actor === "employee" ? "solicitor team" : actor === "client" ? "client" : "system";
   const timeline = addTimeline(data, {
     applicantId: created.id,
     type: "system",
-    message: "Case opened",
+    message: `Case opened by ${openedByLabel}`,
     createdAt: new Date().toISOString(),
-    actor: "system",
+    actor: actor === "system" ? "system" : actor,
     clientVisible: true,
   });
   const notifications = addNotification(data, {
@@ -139,11 +162,13 @@ export function addApplicant(
     createdAt: new Date().toISOString(),
     read: false,
   });
+  const documents = [...data.documents, ...defaultDocuments(data, created.id)];
   const next = {
     ...data,
     applicants: [...data.applicants, created],
     timeline,
     notifications,
+    documents,
   };
   saveData(next);
   return next;

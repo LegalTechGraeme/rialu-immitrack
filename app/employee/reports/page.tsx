@@ -2,14 +2,17 @@
 
 import { useMemo, useState } from "react";
 import CaseTable from "@/components/CaseTable";
-import StatCard from "@/components/StatCard";
+import StatCardDetail from "@/components/StatCardDetail";
 import PageBody, { PageHeader } from "@/components/PageHeader";
 import { useAppData } from "@/hooks/useAppData";
 import { monthsUntil, updateCaseStatus } from "@/lib/store";
 
+type StatPanel = "expiring" | "wip" | "missing";
+
 export default function ReportsPage() {
   const { data, update, ready } = useAppData();
   const [expiryMonths, setExpiryMonths] = useState(3);
+  const [openPanel, setOpenPanel] = useState<StatPanel | null>(null);
 
   const expiring = useMemo(() => {
     if (!data) return [];
@@ -39,9 +42,39 @@ export default function ReportsPage() {
       <PageHeader title="Reports & alerts" subtitle="Expiry pipeline, WIP, and compliance gaps" />
       <PageBody>
         <div className="grid gap-4 sm:grid-cols-3 mb-8">
-          <StatCard label="Expiring soon" value={expiring.length} accent="warning" />
-          <StatCard label="Work in progress" value={wip.length} accent="navy" />
-          <StatCard label="Missing documents" value={missingDocs.length} accent="danger" />
+          <StatCardDetail
+            label="Expiring soon"
+            value={expiring.length}
+            accent="warning"
+            applicants={expiring}
+            clients={data.clients}
+            emptyMessage="No permits expiring in this window."
+            open={openPanel === "expiring"}
+            onOpen={() => setOpenPanel("expiring")}
+            onClose={() => setOpenPanel(null)}
+          />
+          <StatCardDetail
+            label="Work in progress"
+            value={wip.length}
+            accent="navy"
+            applicants={wip}
+            clients={data.clients}
+            emptyMessage="No cases in progress."
+            open={openPanel === "wip"}
+            onOpen={() => setOpenPanel("wip")}
+            onClose={() => setOpenPanel(null)}
+          />
+          <StatCardDetail
+            label="Missing documents"
+            value={missingDocs.length}
+            accent="danger"
+            applicants={missingDocs}
+            clients={data.clients}
+            emptyMessage="No document compliance gaps."
+            open={openPanel === "missing"}
+            onOpen={() => setOpenPanel("missing")}
+            onClose={() => setOpenPanel(null)}
+          />
         </div>
 
         <section className="mb-10">

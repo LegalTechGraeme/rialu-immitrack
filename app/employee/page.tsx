@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import StatCardDetail from "@/components/StatCardDetail";
 import Notifications from "@/components/Notifications";
+import NewCaseModal from "@/components/NewCaseModal";
 import { PriorityBadge, StatusBadge } from "@/components/StatusBadge";
 import PageBody, { PageHeader } from "@/components/PageHeader";
 import { useAppData } from "@/hooks/useAppData";
@@ -18,6 +19,7 @@ const WITH_AUTHORITIES: Applicant["status"][] = ["submitted", "processing", "add
 export default function EmployeeOverview() {
   const { data, update, ready } = useAppData();
   const [openPanel, setOpenPanel] = useState<StatPanel | null>(null);
+  const [newCaseOpen, setNewCaseOpen] = useState(false);
 
   const stats = useMemo(() => {
     if (!data) return null;
@@ -61,6 +63,9 @@ export default function EmployeeOverview() {
         actions={
           <div className="flex gap-2">
             <Notifications data={data} onUpdate={update} />
+            <button className="btn btn-primary text-xs" onClick={() => setNewCaseOpen(true)}>
+              New case
+            </button>
             <button className="btn btn-ghost text-xs" onClick={() => update(resetData())}>
               Reset demo
             </button>
@@ -160,6 +165,14 @@ export default function EmployeeOverview() {
           </div>
         </div>
       </PageBody>
+
+      <NewCaseModal
+        data={data}
+        role="employee"
+        open={newCaseOpen}
+        onClose={() => setNewCaseOpen(false)}
+        onCreated={update}
+      />
     </>
   );
 }

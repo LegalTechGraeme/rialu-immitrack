@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import CaseTable from "@/components/CaseTable";
+import NewCaseModal from "@/components/NewCaseModal";
 import PageBody, { PageHeader } from "@/components/PageHeader";
 import { useAppData } from "@/hooks/useAppData";
 import { updateCaseStatus } from "@/lib/store";
@@ -10,7 +11,8 @@ export default function EmployeeCasesPage() {
   const { data, update, ready } = useAppData();
   const [search, setSearch] = useState("");
   const [clientFilter, setClientFilter] = useState<number | "">("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [newCaseOpen, setNewCaseOpen] = useState(false);
 
   const filtered = useMemo(() => {
     if (!data) return [];
@@ -34,7 +36,15 @@ export default function EmployeeCasesPage() {
 
   return (
     <>
-      <PageHeader title="All cases" subtitle="Sort columns, update status with confirmation, or open a case for full detail" />
+      <PageHeader
+        title="All cases"
+        subtitle="Sort columns, filter, update status with confirmation, or open a case for full detail"
+        actions={
+          <button className="btn btn-primary text-xs" onClick={() => setNewCaseOpen(true)}>
+            New case
+          </button>
+        }
+      />
       <PageBody>
         <div className="flex flex-wrap gap-3 mb-6">
           <input
@@ -84,6 +94,14 @@ export default function EmployeeCasesPage() {
           }
         />
       </PageBody>
+
+      <NewCaseModal
+        data={data}
+        role="employee"
+        open={newCaseOpen}
+        onClose={() => setNewCaseOpen(false)}
+        onCreated={update}
+      />
     </>
   );
 }

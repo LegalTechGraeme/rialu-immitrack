@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Applicant, AppData, Role } from "@/lib/types";
+import type { Applicant, AppData, CaseStatus, Role } from "@/lib/types";
 import {
   addNote,
   caseDocuments,
@@ -13,6 +13,7 @@ import {
 import { generateCaseBrief } from "@/lib/ai";
 import { PriorityBadge, StatusBadge } from "./StatusBadge";
 import StatusSelect from "./StatusSelect";
+import StatusChangeConfirm from "./StatusChangeConfirm";
 
 interface Props {
   data: AppData;
@@ -24,6 +25,7 @@ interface Props {
 export default function CaseDetailView({ data, applicant, role, onUpdate }: Props) {
   const [note, setNote] = useState("");
   const [clientVisible, setClientVisible] = useState(true);
+  const [pendingStatus, setPendingStatus] = useState<CaseStatus | null>(null);
   const docs = caseDocuments(data, applicant.id);
   const timeline = caseTimeline(data, applicant.id, role);
   const notes = caseNotes(data, applicant.id, role);
@@ -51,9 +53,9 @@ export default function CaseDetailView({ data, applicant, role, onUpdate }: Prop
               <StatusSelect
                 value={applicant.status}
                 role={role}
-                onChange={(s) =>
-                  onUpdate(updateCaseStatus(data, applicant.id, s, role))
-                }
+                onChange={(s) => {
+                  if (s !== applicant.status) setPendingStatus(s);
+                }}
               />
             </div>
           </div>
@@ -198,6 +200,20 @@ export default function CaseDetailView({ data, applicant, role, onUpdate }: Prop
           <div><span style={{ color: "var(--text-muted)" }}>Permit expiry</span><br />{applicant.currentExpiry}</div>
         </div>
       </aside>
+
+      <StatusChangeConfirm
+        applicantName={`${applicant.firstName} ${applicant.lastName}`}
+        fromStatus={applicant.status}
+        toStatus={pendingStatus ?? applicant.status}
+        open={pendingStatus !== null}
+        onConfirm={() => {
+          if (pendingStatus) {
+            onUpdate(updateCaseStatus(data, applicant.id, pendingStatus, role));
+          }
+          setPendingStatus(null);
+        }}
+        onCancel={() => setPendingStatus(null)}
+      />
     </div>
   );
 }
