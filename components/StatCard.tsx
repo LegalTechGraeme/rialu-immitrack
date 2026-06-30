@@ -3,6 +3,7 @@ interface Props {
   value: string | number;
   hint?: string;
   accent?: "navy" | "gold" | "danger" | "success" | "warning";
+  nested?: boolean;
 }
 
 const accents = {
@@ -13,9 +14,9 @@ const accents = {
   warning: "var(--warning)",
 };
 
-export default function StatCard({ label, value, hint, accent = "navy" }: Props) {
-  return (
-    <div className="card p-5">
+export default function StatCard({ label, value, hint, accent = "navy", nested }: Props) {
+  const content = (
+    <>
       <div
         className="text-[0.75rem] font-semibold uppercase tracking-wide mb-2"
         style={{ color: "var(--text-muted)" }}
@@ -33,6 +34,10 @@ export default function StatCard({ label, value, hint, accent = "navy" }: Props)
           {hint}
         </p>
       )}
-    </div>
+    </>
   );
+
+  if (nested) return content;
+
+  return <div className="card p-5">{content}</div>;
 }

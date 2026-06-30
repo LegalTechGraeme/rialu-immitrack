@@ -1,27 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
-import StatCard from "@/components/StatCard";
+import { useMemo, useState } from "react";
+import StatCardDetail from "@/components/StatCardDetail";
 import Notifications from "@/components/Notifications";
 import { PriorityBadge, StatusBadge } from "@/components/StatusBadge";
 import PageBody, { PageHeader } from "@/components/PageHeader";
 import { useAppData } from "@/hooks/useAppData";
 import { generateTeamInsights } from "@/lib/ai";
 import { resetData } from "@/lib/store";
+import type { Applicant } from "@/lib/types";
+
+type StatPanel = "active" | "urgent" | "authorities" | "approved";
+
+const WITH_AUTHORITIES: Applicant["status"][] = ["submitted", "processing", "additional_info"];
 
 export default function EmployeeOverview() {
   const { data, update, ready } = useAppData();
+  const [openPanel, setOpenPanel] = useState<StatPanel | null>(null);
 
   const stats = useMemo(() => {
     if (!data) return null;
+    const active = data.applicants;
+    const urgent = data.applicants.filter((a) => a.priority === "urgent");
+    const authorities = data.applicants.filter((a) => WITH_AUTHORITIES.includes(a.status));
+    const approved = data.applicants.filter((a) => a.status === "approved");
     return {
-      total: data.applicants.length,
-      urgent: data.applicants.filter((a) => a.priority === "urgent").length,
-      processing: data.applicants.filter((a) =>
-        ["submitted", "processing", "additional_info"].includes(a.status)
-      ).length,
-      approved: data.applicants.filter((a) => a.status === "approved").length,
+      total: active.length,
+      urgent: urgent.length,
+      processing: authorities.length,
+      approved: approved.length,
+      active,
+      urgentList: urgent,
+      authoritiesList: authorities,
+      approvedList: approved,
     };
   }, [data]);
 
@@ -57,10 +69,49 @@ export default function EmployeeOverview() {
       />
       <PageBody>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          <StatCard label="Active cases" value={stats.total} />
-          <StatCard label="Urgent" value={stats.urgent} accent="danger" hint="Needs action today" />
-          <StatCard label="With authorities" value={stats.processing} accent="gold" />
-          <StatCard label="Approved" value={stats.approved} accent="success" />
+          <StatCardDetail
+            label="Active cases"
+            value={stats.total}
+            applicants={stats.active}
+            clients={data.clients}
+            open={openPanel === "active"}
+            onOpen={() => setOpenPanel("active")}
+            onClose={() => setOpenPanel(null)}
+          />
+          <StatCardDetail
+            label="Urgent"
+            value={stats.urgent}
+            accent="danger"
+            hint="Needs action today"
+            applicants={stats.urgentList}
+            clients={data.clients}
+            emptyMessage="No urgent cases right now."
+            open={openPanel === "urgent"}
+            onOpen={() => setOpenPanel("urgent")}
+            onClose={() => setOpenPanel(null)}
+          />
+          <StatCardDetail
+            label="With authorities"
+            value={stats.processing}
+            accent="gold"
+            applicants={stats.authoritiesList}
+            clients={data.clients}
+            emptyMessage="No cases currently with the authorities."
+            open={openPanel === "authorities"}
+            onOpen={() => setOpenPanel("authorities")}
+            onClose={() => setOpenPanel(null)}
+          />
+          <StatCardDetail
+            label="Approved"
+            value={stats.approved}
+            accent="success"
+            applicants={stats.approvedList}
+            clients={data.clients}
+            emptyMessage="No approved cases yet."
+            open={openPanel === "approved"}
+            onOpen={() => setOpenPanel("approved")}
+            onClose={() => setOpenPanel(null)}
+          />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
