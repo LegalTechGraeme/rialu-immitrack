@@ -34,7 +34,7 @@ export default function EmployeeCasesPage() {
 
   return (
     <>
-      <PageHeader title="All cases" subtitle="Update status inline or open a case for full detail" />
+      <PageHeader title="All cases" subtitle="Sort columns, update status with confirmation, or open a case for full detail" />
       <PageBody>
         <div className="flex flex-wrap gap-3 mb-6">
           <input
