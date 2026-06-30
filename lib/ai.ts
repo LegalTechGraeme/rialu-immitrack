@@ -11,7 +11,10 @@ export function generateCaseBrief(
   const notes = data.notes.filter((n) => n.applicantId === applicant.id);
 
   const lines = [
-    `**${applicant.firstName} ${applicant.lastName}** — ${applicant.visaType}`,
+    `**${applicant.firstName} ${applicant.lastName}** — applying for ${applicant.visaType}`,
+    applicant.currentPermission
+      ? `Current permission: ${applicant.currentPermission}${applicant.currentExpiry ? ` (expires ${applicant.currentExpiry})` : ""}`
+      : "",
     `Status: ${STATUS_LABELS[applicant.status]} · Priority: ${applicant.priority}`,
     applicant.nextAction ? `Next action: ${applicant.nextAction}` : "",
     "",

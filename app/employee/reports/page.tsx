@@ -17,7 +17,10 @@ export default function ReportsPage() {
   const expiring = useMemo(() => {
     if (!data) return [];
     return data.applicants.filter(
-      (a) => monthsUntil(a.currentExpiry) >= 0 && monthsUntil(a.currentExpiry) <= expiryMonths
+      (a) =>
+        a.currentExpiry &&
+        monthsUntil(a.currentExpiry) >= 0 &&
+        monthsUntil(a.currentExpiry) <= expiryMonths
     );
   }, [data, expiryMonths]);
 

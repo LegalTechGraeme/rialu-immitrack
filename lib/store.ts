@@ -7,6 +7,7 @@ import type {
   CaseNote,
   CaseStatus,
   DemoSession,
+  Document,
   Notification,
   Role,
   TimelineEvent,
@@ -19,6 +20,11 @@ const SESSION_KEY = "rialu-immitrack-session";
 function migrate(data: AppData): AppData {
   if (!data.timeline) data.timeline = [];
   if (!data.notes) data.notes = [];
+  data.applicants = data.applicants.map((a) => ({
+    ...a,
+    currentPermission: a.currentPermission ?? undefined,
+    currentExpiry: a.currentExpiry || undefined,
+  }));
   return data;
 }
 
@@ -246,9 +252,11 @@ export function clientName(data: AppData, clientId: number): string {
   return data.clients.find((c) => c.id === clientId)?.name ?? "Unknown";
 }
 
-export function monthsUntil(dateStr: string): number {
+export function monthsUntil(dateStr?: string): number {
+  if (!dateStr) return Number.POSITIVE_INFINITY;
   const today = new Date();
   const expiry = new Date(dateStr);
+  if (Number.isNaN(expiry.getTime())) return Number.POSITIVE_INFINITY;
   return (
     (expiry.getFullYear() - today.getFullYear()) * 12 +
     (expiry.getMonth() - today.getMonth())
@@ -283,4 +291,78 @@ export function caseNotes(data: AppData, applicantId: number, role: Role) {
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
+}
+
+export function addDocument(
+  data: AppData,
+  doc: Omit<Document, "id">,
+  actor: Role
+): AppData {
+  const applicant = data.applicants.find((a) => a.id === doc.applicantId);
+  if (!applicant) return data;
+
+  const entry: Document = { ...doc, id: nextId(data.documents) };
+  const timeline = addTimeline(data, {
+    applicantId: doc.applicantId,
+    type: "document",
+    message: `Document added to checklist: ${entry.documentType}`,
+    createdAt: new Date().toISOString(),
+    actor,
+    clientVisible: true,
+  });
+  const next = {
+    ...data,
+    documents: [...data.documents, entry],
+    timeline,
+  };
+  saveData(next);
+  return next;
+}
+
+export function updateDocument(
+  data: AppData,
+  docId: number,
+  patch: Partial<Document>,
+  actor: Role
+): AppData {
+  const existing = data.documents.find((d) => d.id === docId);
+  if (!existing) return data;
+
+  const documents = data.documents.map((d) =>
+    d.id === docId ? { ...d, ...patch } : d
+  );
+  const updated = documents.find((d) => d.id === docId)!;
+  const timeline = addTimeline(data, {
+    applicantId: existing.applicantId,
+    type: "document",
+    message: `Document updated: ${updated.documentType} → ${updated.status}`,
+    createdAt: new Date().toISOString(),
+    actor,
+    clientVisible: true,
+  });
+  const next = { ...data, documents, timeline };
+  saveData(next);
+  return next;
+}
+
+export function removeDocument(
+  data: AppData,
+  docId: number,
+  actor: Role
+): AppData {
+  const existing = data.documents.find((d) => d.id === docId);
+  if (!existing) return data;
+
+  const documents = data.documents.filter((d) => d.id !== docId);
+  const timeline = addTimeline(data, {
+    applicantId: existing.applicantId,
+    type: "document",
+    message: `Document removed from checklist: ${existing.documentType}`,
+    createdAt: new Date().toISOString(),
+    actor,
+    clientVisible: true,
+  });
+  const next = { ...data, documents, timeline };
+  saveData(next);
+  return next;
 }

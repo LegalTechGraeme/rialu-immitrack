@@ -14,12 +14,26 @@ interface Props {
   onCreated: (data: AppData) => void;
 }
 
-const inputClass =
-  "w-full rounded-lg border px-3 py-2 text-sm";
+const inputClass = "w-full rounded-lg border px-3 py-2 text-sm";
 const inputStyle = { borderColor: "var(--border)" };
-
 const labelClass = "block text-xs font-semibold uppercase tracking-wide mb-1.5";
 const labelStyle = { color: "var(--text-muted)" };
+
+const emptyForm = (clientId: number, role: Role) => ({
+  clientId,
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  dateOfBirth: "",
+  nationality: "",
+  currentPermission: "",
+  visaType: "",
+  currentExpiry: "",
+  priority: "medium" as const,
+  assignedTo: "Sarah O'Connor",
+  nextAction: role === "client" ? "Gather required documents" : "Schedule intake call",
+});
 
 export default function NewCaseModal({
   data,
@@ -32,32 +46,14 @@ export default function NewCaseModal({
   const router = useRouter();
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
-  const oneYearFromNow = new Date();
-  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+  const defaultClientId = clientId ?? data.clients[0]?.id ?? 1;
 
-  const [form, setForm] = useState({
-    clientId: clientId ?? data.clients[0]?.id ?? 1,
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    dateOfBirth: "",
-    nationality: "",
-    visaType: "",
-    currentExpiry: oneYearFromNow.toISOString().slice(0, 10),
-    priority: "medium" as const,
-    assignedTo: "Sarah O'Connor",
-    nextAction: role === "client" ? "Gather required documents" : "Schedule intake call",
-  });
+  const [form, setForm] = useState(emptyForm(defaultClientId, role));
 
   useEffect(() => {
     if (!open) return;
-    setForm((current) => ({
-      ...current,
-      clientId: clientId ?? current.clientId,
-      nextAction: role === "client" ? "Gather required documents" : "Schedule intake call",
-    }));
-  }, [open, clientId, role]);
+    setForm(emptyForm(clientId ?? defaultClientId, role));
+  }, [open, clientId, defaultClientId, role]);
 
   useEffect(() => {
     if (!open) return;
@@ -103,7 +99,8 @@ export default function NewCaseModal({
         nationality: form.nationality.trim(),
         status: "intake",
         visaType: form.visaType.trim(),
-        currentExpiry: form.currentExpiry,
+        currentPermission: form.currentPermission.trim() || undefined,
+        currentExpiry: form.currentExpiry || undefined,
         priority: role === "employee" ? (form.priority as "low" | "medium" | "high" | "urgent") : "medium",
         assignedTo: role === "employee" ? form.assignedTo : undefined,
         nextAction: form.nextAction.trim() || undefined,
@@ -235,19 +232,38 @@ export default function NewCaseModal({
                 style={inputStyle}
               />
             </div>
+
+            <div className="sm:col-span-2 pt-2">
+              <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--navy)" }}>
+                Permit details
+              </p>
+            </div>
+
             <div className="sm:col-span-2">
-              <label className={labelClass} style={labelStyle}>Visa / permit type</label>
+              <label className={labelClass} style={labelStyle}>Current permission (if any)</label>
+              <input
+                value={form.currentPermission}
+                onChange={(e) => set("currentPermission", e.target.value)}
+                className={inputClass}
+                style={inputStyle}
+                placeholder="e.g. Stamp 1G, General Employment Permit — leave blank if first application"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={labelClass} style={labelStyle}>Permission applying for</label>
               <input
                 value={form.visaType}
                 onChange={(e) => set("visaType", e.target.value)}
                 className={inputClass}
                 style={inputStyle}
-                placeholder="e.g. General Employment Permit"
+                placeholder="e.g. Critical Skills Employment Permit"
                 required
               />
             </div>
             <div>
-              <label className={labelClass} style={labelStyle}>Permit expiry</label>
+              <label className={labelClass} style={labelStyle}>
+                Current permission expiry <span className="normal-case font-normal">(optional)</span>
+              </label>
               <input
                 type="date"
                 value={form.currentExpiry}
@@ -255,7 +271,11 @@ export default function NewCaseModal({
                 className={inputClass}
                 style={inputStyle}
               />
+              <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+                Only needed when renewing or switching from an existing permit
+              </p>
             </div>
+
             {role === "employee" && (
               <>
                 <div>

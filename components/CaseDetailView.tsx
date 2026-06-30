@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { Applicant, AppData, CaseStatus, Role } from "@/lib/types";
 import {
   addNote,
-  caseDocuments,
   caseNotes,
   caseTimeline,
   clientName,
@@ -14,6 +13,7 @@ import { generateCaseBrief } from "@/lib/ai";
 import { PriorityBadge, StatusBadge } from "./StatusBadge";
 import StatusSelect from "./StatusSelect";
 import StatusChangeConfirm from "./StatusChangeConfirm";
+import DocumentChecklist from "./DocumentChecklist";
 
 interface Props {
   data: AppData;
@@ -26,7 +26,6 @@ export default function CaseDetailView({ data, applicant, role, onUpdate }: Prop
   const [note, setNote] = useState("");
   const [clientVisible, setClientVisible] = useState(true);
   const [pendingStatus, setPendingStatus] = useState<CaseStatus | null>(null);
-  const docs = caseDocuments(data, applicant.id);
   const timeline = caseTimeline(data, applicant.id, role);
   const notes = caseNotes(data, applicant.id, role);
   const brief = generateCaseBrief(applicant, data);
@@ -40,7 +39,15 @@ export default function CaseDetailView({ data, applicant, role, onUpdate }: Prop
               <h2 className="font-serif text-2xl mb-1">
                 {applicant.firstName} {applicant.lastName}
               </h2>
-              <p style={{ color: "var(--text-muted)" }}>{applicant.visaType}</p>
+              <p style={{ color: "var(--text-muted)" }}>
+                Applying for: {applicant.visaType}
+              </p>
+              {applicant.currentPermission && (
+                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
+                  Current permission: {applicant.currentPermission}
+                  {applicant.currentExpiry ? ` · expires ${applicant.currentExpiry}` : ""}
+                </p>
+              )}
               {role === "employee" && (
                 <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
                   {clientName(data, applicant.clientId)} · {applicant.assignedTo}
@@ -70,33 +77,12 @@ export default function CaseDetailView({ data, applicant, role, onUpdate }: Prop
           )}
         </div>
 
-        <div className="card">
-          <div className="px-5 py-4 border-b font-semibold" style={{ borderColor: "var(--border)" }}>
-            Document checklist
-          </div>
-          <ul className="divide-y" style={{ borderColor: "var(--border-light)" }}>
-            {docs.map((d) => (
-              <li key={d.id} className="flex items-center justify-between px-5 py-3">
-                <div>
-                  <span className="font-medium">{d.documentType}</span>
-                  {d.required && (
-                    <span className="ml-2 text-[0.65rem] uppercase font-semibold" style={{ color: "var(--gold)" }}>Required</span>
-                  )}
-                </div>
-                <span
-                  className="text-xs font-semibold uppercase"
-                  style={{
-                    color:
-                      d.status === "valid" ? "var(--success)" :
-                      d.status === "missing" ? "var(--danger)" : "var(--warning)",
-                  }}
-                >
-                  {d.status}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <DocumentChecklist
+          data={data}
+          applicantId={applicant.id}
+          role={role}
+          onUpdate={onUpdate}
+        />
 
         <div className="card">
           <div className="px-5 py-4 border-b font-semibold" style={{ borderColor: "var(--border)" }}>
@@ -197,7 +183,15 @@ export default function CaseDetailView({ data, applicant, role, onUpdate }: Prop
           <div><span style={{ color: "var(--text-muted)" }}>Nationality</span><br />{applicant.nationality}</div>
           <div><span style={{ color: "var(--text-muted)" }}>DOB</span><br />{applicant.dateOfBirth}</div>
           <div><span style={{ color: "var(--text-muted)" }}>Phone</span><br />{applicant.phone}</div>
-          <div><span style={{ color: "var(--text-muted)" }}>Permit expiry</span><br />{applicant.currentExpiry}</div>
+          <div><span style={{ color: "var(--text-muted)" }}>Applying for</span><br />{applicant.visaType}</div>
+          <div>
+            <span style={{ color: "var(--text-muted)" }}>Current permission</span><br />
+            {applicant.currentPermission ?? "None / first application"}
+          </div>
+          <div>
+            <span style={{ color: "var(--text-muted)" }}>Permission expiry</span><br />
+            {applicant.currentExpiry ?? "—"}
+          </div>
         </div>
       </aside>
 

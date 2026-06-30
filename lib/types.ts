@@ -27,7 +27,8 @@ export interface Applicant {
   nationality: string;
   status: CaseStatus;
   visaType: string;
-  currentExpiry: string;
+  currentPermission?: string;
+  currentExpiry?: string;
   priority: "low" | "medium" | "high" | "urgent";
   assignedTo?: string;
   nextAction?: string;

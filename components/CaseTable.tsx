@@ -133,7 +133,7 @@ export default function CaseTable({
             sort.direction
           );
         case "expiry":
-          return compareValues(a.currentExpiry, b.currentExpiry, sort.direction);
+          return compareValues(a.currentExpiry ?? "", b.currentExpiry ?? "", sort.direction);
         default:
           return 0;
       }
@@ -214,7 +214,9 @@ export default function CaseTable({
                     {clientName(data, a.clientId)}
                   </td>
                 )}
-                <td className="px-4 py-3" style={{ color: "var(--text-secondary)" }}>{a.currentExpiry}</td>
+                <td className="px-4 py-3" style={{ color: "var(--text-secondary)" }}>
+                  {a.currentExpiry ?? "—"}
+                </td>
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`${basePath}/cases/${a.id}`}
